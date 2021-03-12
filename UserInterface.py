@@ -7,6 +7,7 @@ from UserClass import UserModel
 from sklearn.model_selection import train_test_split
 from sklearn import svm
 from sklearn.metrics import confusion_matrix
+import json
 
 code = "abcdefghijklmnopqrstuvwxyzABCDEFGHİJKLMNOPQRSTUVWXYZ0123456789"
 rdict = dict([ (x[1],x[0]) for x in enumerate(code) ])
@@ -28,6 +29,7 @@ class AccountWindow(QMainWindow):
         self.TrainButton.clicked.connect(self.Train)
         self.TestButton.clicked.connect(self.Predict)
         self.CompareAll.clicked.connect(self.Compare)
+        self.ExportButton.clicked.connect(self.SessionExport)
         
         self.TimePressed  = []
         self.TimeReleased = []
@@ -41,6 +43,21 @@ class AccountWindow(QMainWindow):
             self.Accounts = np.load("Accounts\Accounts.npy",allow_pickle=True).tolist()
         except:
             self.Accounts = []
+    
+    
+    
+    def SessionExport(self):
+        if self.ID < 0:
+            self.ErrorMessage.setIcon(QMessageBox.Information)
+            self.ErrorMessage.setText("Your are not logged in")
+            self.ErrorMessage.setWindowTitle("Warning!")
+            retval = self.ErrorMessage.exec_()
+        else:
+            with open("Sessions.json", "w") as outfile: 
+                outfile.write(json.dumps(self.Accounts[self.ID].TrainData)) 
+    
+    
+    
     
     
     def Compare(self):
