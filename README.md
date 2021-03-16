@@ -7,9 +7,6 @@ This is a python project which use following libraries;
 -time
 -sklearn
 
-<a id="raw-url" href="https://drive.google.com/file/d/1OZUiCsFDxfS0FICtPCTVbbXR0U01qoAH/view?usp=sharing">Download App</a>
-
-
 Make sure to download necessary libraries before starting 
 
 The main goal of this project is increasing the password security of users.
