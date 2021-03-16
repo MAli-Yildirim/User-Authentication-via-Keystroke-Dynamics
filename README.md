@@ -7,9 +7,6 @@ This is a python project which use following libraries;
 -time
 -sklearn
 
-<a download="custom-filename.jpg" href="/path/to/image" title="ImageName">
-    <img alt="ImageName" src="/path/to/image">
-</a>
 
 Make sure to download necessary libraries before starting 
 
