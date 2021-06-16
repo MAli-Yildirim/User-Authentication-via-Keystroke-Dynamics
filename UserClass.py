@@ -12,7 +12,12 @@ class UserModel():
         self.TrainData = self.TrainData + TrainSet
         
     def CreateModel(self):
-        return OneClassSVM(kernel = 'rbf', gamma = 0.000001, nu = 0.03).fit(array(self.TrainData))
+        hold = []
+        sz = len(self.AccountPassword)*2
+
+        for j in range(len(self.TrainData)):
+            hold.append(array(self.TrainData)[j][sz:])
+        return OneClassSVM(kernel = 'rbf',gamma="auto").fit(array(hold))
         
         
     
