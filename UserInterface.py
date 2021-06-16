@@ -1,13 +1,21 @@
-
+from operator import mul
+from sklearn.cluster import KMeans,Birch
 from PyQt5.QtWidgets import QMainWindow,QMessageBox,QApplication
 from PyQt5.uic import loadUi
 from time import time
+from numpy import load,subtract,save,array2string,array
 import numpy as np
 from UserClass import UserModel
 from sklearn.model_selection import train_test_split
-from sklearn import svm
-from sklearn.metrics import confusion_matrix
-import json
+from sklearn.svm import SVC,OneClassSVM
+
+from sklearn.metrics import confusion_matrix,f1_score
+from sklearn.ensemble import IsolationForest
+from sklearn.covariance import EllipticEnvelope
+
+from scipy.stats import multivariate_normal
+from json import dumps
+from sys import argv
 
 code = "abcdefghijklmnopqrstuvwxyzABCDEFGHİJKLMNOPQRSTUVWXYZ0123456789"
 rdict = dict([ (x[1],x[0]) for x in enumerate(code) ])
@@ -39,22 +47,24 @@ class AccountWindow(QMainWindow):
         self.ID = -1
         self.String = ""
         self.PasswordText_3.setText(self.String)
+        self.Reset()
         try:
-            self.Accounts = np.load("Accounts\Accounts.npy",allow_pickle=True).tolist()
+            self.Accounts = load("Accounts\Accounts.npy",allow_pickle=True).tolist()
         except:
             self.Accounts = []
-    
-    
+        
+        
+          
     
     def SessionExport(self):
         if self.ID < 0:
             self.ErrorMessage.setIcon(QMessageBox.Information)
             self.ErrorMessage.setText("Your are not logged in")
             self.ErrorMessage.setWindowTitle("Warning!")
-            retval = self.ErrorMessage.exec_()
+            self.ErrorMessage.exec_()
         else:
             with open("Sessions.json", "w") as outfile: 
-                outfile.write(json.dumps(self.Accounts[self.ID].TrainData)) 
+                outfile.write(dumps(self.Accounts[self.ID].TrainData)) 
     
     
     
@@ -65,24 +75,32 @@ class AccountWindow(QMainWindow):
         
         X = []
         y = []
-        clf = svm.SVC(kernel=self.comboBox.currentText())
+        self.clf = SVC(kernel=self.comboBox.currentText())
         
         for i in range(len(self.Accounts)):
             if self.CompareText.text() == self.Accounts[i].AccountPassword:
-                X = X + self.Accounts[i].TrainData
+                hold = []
+                for k in range(len(self.Accounts[i].TrainData)):
+                    hold.append(self.Accounts[i].TrainData[k][16:])
+                X = X + hold
                 for x in range(len(self.Accounts[i].TrainData)):
                     y.append(self.Accounts[i].AccountName)
         
+        
+
+
         if X == []:
             self.ErrorMessage.setIcon(QMessageBox.Information)
             self.ErrorMessage.setText("There are no passwords")
             self.ErrorMessage.setWindowTitle("Warning!")
-            retval = self.ErrorMessage.exec_()  
-        else:
+            self.ErrorMessage.exec_()  
+        elif len(list(set(y))) > 1:
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30, random_state=42)       
-            clf.fit(X_train,y_train)       
-            arr = np.array2string(confusion_matrix(y_test,clf.predict(X_test)))
-            self.CompareAllText.setText(arr +" "+str(round(clf.score(X_test,y_test),2)))
+            self.clf.fit(X_train,y_train)       
+            arr = array2string(confusion_matrix(y_test,self.clf.predict(X_test)))
+            self.CompareAllText.setText(arr +" "+str(round(self.clf.score(X_test,y_test),2)))
+        else:
+            self.CompareAllText.setText("There are not enough imposter data")
         
         
     
@@ -102,7 +120,7 @@ class AccountWindow(QMainWindow):
     
     def ProcessData(self):
         
-        self.Dwell = np.subtract(self.TimeReleased,self.TimePressed).tolist()
+        self.Dwell = subtract(self.TimeReleased,self.TimePressed).tolist()
         for i in range(len(self.TimePressed)-1):
                 self.Flight.append(self.TimePressed[i+1] - self.TimeReleased[i])
             
@@ -122,31 +140,150 @@ class AccountWindow(QMainWindow):
     
     
     def Predict(self):
+
+
         if self.ID < 0:
             self.ErrorMessage.setIcon(QMessageBox.Information)
             self.ErrorMessage.setText("Your are not logged in")
             self.ErrorMessage.setWindowTitle("Warning!")
-            retval = self.ErrorMessage.exec_()
+            self.ErrorMessage.exec_()
         elif  self.String == self.Accounts[self.ID].AccountPassword:
-           
+            y = []
+            for i in range(len(self.Accounts)):
+                if self.Accounts[self.ID].AccountPassword == self.Accounts[i].AccountPassword:
+                    for x in range(len(self.Accounts[i].TrainData)):
+                        y.append(self.Accounts[i].AccountName)
+
+
+            sts = len(list(set(y)))
+
             self.ProcessData()
             
-                
-                
-            model = self.Accounts[self.ID].CreateModel()
-            pred = model.predict([self.TimePressed+self.TimeReleased+self.Dwell+self.Flight])
+
             
-            if pred[0] == -1:
-                self.TrainText.setText("Your password does not match with the user model")
+                
+
+                
+
+            Xset = []
+            Yset = []
+            sz = len(self.Accounts[self.ID].AccountPassword)*2
+
+            for j in range(len(self.Accounts[self.ID].TrainData)):
+                Xset.append(array(self.Accounts[self.ID].TrainData)[j][sz:])
+                Yset.append(1)
+            
+            Xset = array(Xset)
+            Yset = array(Yset)
+
+            
+
+            trainx, testx, trainy, testy = train_test_split(Xset, Yset, test_size=0.3, random_state=2)
+
+            trainx = array(trainx)
+
+            X = []
+            multiy = []
+            multi2y = []
+
+            if sts > 1:
+                
+                for i in range(len(self.Accounts)):
+                    if self.Accounts[self.ID].AccountPassword == self.Accounts[i].AccountPassword and self.ID != i:
+                        hold = []
+                        for k in range(len(self.Accounts[i].TrainData)):
+                            hold.append(self.Accounts[i].TrainData[k][16:])
+                        X = X + hold
+                        for x in range(len(self.Accounts[i].TrainData)):
+                            multiy.append(-1)
+                            multi2y.append(0)
+                X = array(X)
+                multiy = array(multiy)
+                multi2y = array(multi2y)    
+
+
+                testx = np.concatenate((testx,X))
+                testymone = np.concatenate((testy,multiy))
+                testymzero = np.concatenate((testy,multi2y))
+
+            if sts == 1:
+                testymone  = testy
+                testymzero = testy
+            
+            
+
+            Osvm = OneClassSVM(kernel = 'rbf',gamma="auto").fit(trainx)
+            Ypredict = Osvm.predict(testx)
+            score = f1_score(testymone, Ypredict, pos_label=1)
+
+
+            kmeans = KMeans(n_clusters=2, random_state=0).fit(trainx)
+            Ypredict = kmeans.predict(testx)
+            score1 = f1_score(testymzero, Ypredict, pos_label=1)
+                
+
+            brc = Birch(n_clusters=2,threshold=0.01).fit(trainx)
+            Ypredict = brc.predict(testx)
+            score2 = f1_score(testymzero, Ypredict, pos_label=1)
+
+            IsF = IsolationForest(contamination=0.01)
+            IsF.fit(trainx)
+            Ypredict = IsF.predict(testx)
+            score3 = f1_score(testymone, Ypredict, pos_label=1)
+                
+
+            ev = EllipticEnvelope(contamination=0.01)
+            ev.fit(trainx)
+            Ypredict = ev.predict(testx)
+            score4 = f1_score(testymone, Ypredict, pos_label=1)
+
+            if Osvm.predict([self.Dwell+self.Flight]) == 1:
+                OsvmResult = 'pass'
             else:
-                self.TrainText.setText("Your model is matched")
+                OsvmResult = 'fail'
+
+            if kmeans.predict([self.Dwell+self.Flight]) == 1:
+                kmResult = 'pass'
+            else:
+                kmResult = 'fail'
+
+            if brc.predict([self.Dwell+self.Flight]) == 1:
+                brcResult = 'pass'
+            else:
+                brcResult = 'fail'
+
+            if IsF.predict([self.Dwell+self.Flight]) == 1:
+                IsFResult = 'pass'
+            else:
+                IsFResult = 'fail'
+
+            if ev.predict([self.Dwell+self.Flight]) == 1:
+                evResult = 'pass'
+            else:
+                evResult = 'fail'
+
+            #print(score,score1,score2,score3,score4)
+
+            self.TrainText.setText("Score/Model"+" \n" + str(round(score,2)) + " Osvm: "+ OsvmResult + " \n"+str(round(score1,2)) +" Km: " + kmResult + " \n"+str(round(score2,2)) +" Brc: "+ brcResult + " \n " +str(round(score3,2)) + " ISF: "+ IsFResult + " \n"+str(round(score4,2)) +" Ev: "+ evResult  )
+               
+
+
+            #if sts > 1:
+            #    self.CompareText.setText(self.Accounts[self.ID].AccountPassword)
+            #    self.Compare()
+            #    prediction = self.clf.predict([self.Dwell+self.Flight])
+            #    str1 = str(prediction)
+            #    self.TrainText.setText(str(prediction))
+            
 
             self.Reset()
+
+
         else:
             self.ErrorMessage.setIcon(QMessageBox.Information)
             self.ErrorMessage.setText("Your password is wrong")
             self.ErrorMessage.setWindowTitle("Warning!")
-            retval = self.ErrorMessage.exec_()  
+            self.ErrorMessage.exec_()  
         
         
         
@@ -165,7 +302,7 @@ class AccountWindow(QMainWindow):
             self.ErrorMessage.setIcon(QMessageBox.Information)
             self.ErrorMessage.setText("Your are not logged in")
             self.ErrorMessage.setWindowTitle("Warning!")
-            retval = self.ErrorMessage.exec_()
+            self.ErrorMessage.exec_()
         elif  self.String == self.Accounts[self.ID].AccountPassword:
             
             
@@ -174,7 +311,7 @@ class AccountWindow(QMainWindow):
                 
             
             self.Accounts[self.ID].AddTrainSet([self.TimePressed+self.TimeReleased+self.Dwell+self.Flight])
-            np.save("Accounts\Accounts", self.Accounts,allow_pickle=True)
+            save("Accounts\Accounts", self.Accounts,allow_pickle=True)
             
             
             
@@ -186,7 +323,7 @@ class AccountWindow(QMainWindow):
             self.ErrorMessage.setIcon(QMessageBox.Information)
             self.ErrorMessage.setText("Your password is wrong")
             self.ErrorMessage.setWindowTitle("Warning!")
-            retval = self.ErrorMessage.exec_()  
+            self.ErrorMessage.exec_()  
         
         
         
@@ -221,18 +358,18 @@ class AccountWindow(QMainWindow):
                 self.ErrorMessage.setIcon(QMessageBox.Information)
                 self.ErrorMessage.setText("There is a person has that account name")
                 self.ErrorMessage.setWindowTitle("Warning!")
-                retval = self.ErrorMessage.exec_()       
+                self.ErrorMessage.exec_()       
             else:
                 person = UserModel(self.UserIDText_1.text(),self.PasswordText_1.text())
                 self.Accounts.append(person)
-                np.save("Accounts\Accounts", self.Accounts,allow_pickle=True)
+                save("Accounts\Accounts", self.Accounts,allow_pickle=True)
                 self.RegistrationText.setText("Registration is completed. Thank you " + person.AccountName) 
         
         else:
             self.ErrorMessage.setIcon(QMessageBox.Information)
             self.ErrorMessage.setText("Your ID and Password Must be greater than 6 letters")
             self.ErrorMessage.setWindowTitle("Warning!")
-            retval = self.ErrorMessage.exec_()    
+            self.ErrorMessage.exec_()    
         
     """
     It controls account data base to confirm you are the person which has the account password correct
@@ -255,12 +392,12 @@ class AccountWindow(QMainWindow):
                 self.ErrorMessage.setIcon(QMessageBox.Information)
                 self.ErrorMessage.setText("Your Password is Wrong")
                 self.ErrorMessage.setWindowTitle("Warning!")
-                retval = self.ErrorMessage.exec_()
+                self.ErrorMessage.exec_()
         else:
             self.ErrorMessage.setIcon(QMessageBox.Information)
             self.ErrorMessage.setText("There is no account has this name")
             self.ErrorMessage.setWindowTitle("Warning!")
-            retval = self.ErrorMessage.exec_()
+            self.ErrorMessage.exec_()
     """
     It takes time stamp of password keys
     It controls resetting and unwanted keys
@@ -298,7 +435,7 @@ class AccountWindow(QMainWindow):
          
 
 
-app = QApplication([])
+app = QApplication(argv)
 window = AccountWindow()
 window.show()
 app.exec_()
