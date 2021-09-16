@@ -1,0 +1,57 @@
+{% extends 'useraut/main.html' %}
+
+
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html>
+    <head>
+
+
+           <title>Grad</title>
+           <link rel="stylesheet" type="text/css" href="{% static 'css/register.css' %}">
+           
+     
+        </head>
+     <body>
+
+        <form method="POST" action="">
+      {% csrf_token %}
+    <div id="login-box">
+    <div class="left">
+
+      <h1>Log in</h1>
+      <label>Username</label>
+      <input type="text" name="username"/>
+      <label>Password</label>
+      <input type="password" name="password"/>
+
+      <input type="submit" name="log in_submit" value="Login" />
+    
+    </div>
+      
+    </div>
+    {% for message in messages %}
+      
+      <p id="messages"> {{message}} </p>
+
+      {% endfor %}
+    <div>
+      
+
+
+    </div>
+
+
+        </form>
+
+            
+              
+
+     
+
+     </body>
+</html>
+
+
+{% endblock content %}

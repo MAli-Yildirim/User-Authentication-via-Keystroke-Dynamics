@@ -1,0 +1,97 @@
+
+
+
+
+
+
+{% extends 'useraut/main.html' %}
+
+
+{% load static %}
+{% block content %}
+
+
+
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/useraut.css' %}">
+<style>
+    .btnD {
+      background-color: DodgerBlue;
+      border: none;
+      color: white;
+      padding: 12px 30px;
+      cursor: pointer;
+      font-size: 20px;
+      
+    }
+    
+    /* Darker background on mouse-over */
+    .btnD:hover {
+      background-color: RoyalBlue;
+    }
+    
+
+    .bCase {
+
+        margin: auto;
+        
+        text-align: center;
+
+    }
+
+
+    .body{
+
+    background-color:#DDD;
+
+
+    }
+
+
+
+
+</style>
+
+    
+
+<body class="body">
+    <div class="spancolor">
+    <h2>
+    <span>User Authentication via Keystroke Dynamics</span>
+    </h2>
+    <h4>
+    <span >
+        Hi,
+        <br>
+        My name is Mehmet Ali Yıldırım and this is my graduation project User Authentication by using
+        biometric information gathered from keyboards. The main idea is collecting enough information
+        from your keyboard to calculate your typing habits then create a model for your password.
+        <br>
+        <br>
+        To do that first of all you need to register and login into the website then download the 
+        software from the link below. After that you can train your model using the program. After
+        training your password (For good results you have to increase your database at least 100-200)
+        you can import it to your account.
+        <br>
+        <br>
+        At the end, you could see the classification between users whos passwords are same. 
+        This project is pre-alpha so there could be bugs or errors.
+        Also you can checkout my project on: <a href="https://github.com/MAli-Yildirim/User-Authentication-via-Keystroke-Dynamics.git">https://github.com/MAli-Yildirim/User-Authentication-via-Keystroke-Dynamics.git</a>
+
+    </span>
+    </div>
+</body>
+<br>
+<div class="bCase">
+
+<a class="btnD" id="raw-url" href="https://drive.google.com/file/d/1OZUiCsFDxfS0FICtPCTVbbXR0U01qoAH/view?usp=sharing">Download App</a>
+
+
+</div>
+
+
+
+   
+
+
+{% endblock content %}

@@ -1,0 +1,223 @@
+{% extends 'useraut/main.html' %}
+{% block content %}
+
+
+
+
+<style>
+
+
+.one {
+  width: 30%;
+  height: 500px;
+  
+  float: left;
+
+  position: relative;
+
+  width: 300px;
+  background: rgb(245, 109, 109);
+  border-radius: 2px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.two {
+  margin-left: 50%;
+  height: 500px;
+  
+  position: relative;
+ 
+  width: 300px;
+  
+  background: rgb(189, 183, 183);
+  border-radius: 2px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+</style>
+
+
+<div class="one">
+
+
+<h1>{{ data.date_posted }}</h1>
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<form action="" method="POST">
+{% csrf_token %}
+<label>Session Data</label>
+    <input type="text" name="session"  enctype="application/json" maxlength="999999999999">
+<label>Password Code</label>
+    <input type="text" name="code"   maxlength="20">
+
+<input type="submit" value="submit" name="sessiondata">
+
+<br>
+<br>
+<label>Password Code</label>
+<input type="text" name="code2"   maxlength="20">
+<br>
+<label>Kernel</label>
+<br>
+
+<label>linear</label>
+<input type="radio" name="kernel" value="linear">
+<label>rbf</label>
+<input type="radio" name="kernel" value="rbf">
+  <br>
+    <input type="submit" value="CompareAll" name="codes">
+
+  <br>
+  <br>
+
+  <label> Username </label>
+  <input type="text" name="Username">
+  <label> Password </label>
+  <input type="text" name="code3" id="PassTest"  maxlength="20">
+  <label> Predict </label>
+  <input type="password" name="OneCode" id="test2" readonly >
+  <br>
+  
+  
+  <input type="submit" value="Try to Login" name="One-classCode">
+  <br>
+  <input type="button" value="Generate One-class compare" id="computeButton">
+  <input type="button" value="Reset" id="resetButton">
+
+
+
+
+</form>
+
+  </div>               
+
+<div class="two">
+ {% for data in result %}   
+<h3>{{ data }}</h3>
+{%endfor%}
+<br>
+
+{{score}}%
+{{prediction}}
+<br>
+<br>
+{{smt1}}
+<br>
+  {{smt2}}
+  <br>
+  {{smt3}}
+  <br>
+  {{smt5}}
+  {{smt4}}
+  
+</div>
+
+
+<span>Open your Session.json file and copy paste it into the Session data
+     text area after that enter code area which password code this dataset belongs to
+     then submit.Congratulations and Thank you for increasing our database.
+
+    
+    
+    </span>
+
+
+<div>
+
+  
+  
+
+
+</div>
+
+
+
+<script>
+    var tmp = [];
+    var tmr = [];
+    var dwell = [];
+    var flight = [];
+
+    let textBox = document.getElementById('PassTest');
+
+    let testbox2 = document.getElementById('test2');
+    let compute = document.getElementById('computeButton');
+    let reset   = document.getElementById('resetButton');
+
+
+    
+
+    textBox.addEventListener('keydown', (event) => {
+        var d = new Date();
+        tmp.push(d.getTime());
+    });
+    
+    textBox.addEventListener('keyup', (event) => {
+        var d = new Date();
+        tmr.push(d.getTime());
+        if(event.key == "Backspace" ) 
+        {
+        
+          
+          textBox.value = "";
+          tmp = []
+          tmr = []
+          dwell = []
+          flight = []
+
+        }
+
+
+
+      compute.onclick = function(){
+        dwell = [];
+        flight = [];
+        value1 = tmr[0];
+        value2 = tmp[0];
+      for(var i = 0;i<=tmp.length-1;i++){
+        dwell.push(((tmr[i] - tmp[i])/1000).toFixed(2));
+        
+      }
+      for(var j = 0;j<=tmp.length-2;j++){
+        flight.push((tmp[j+1] - tmr[j])/1000).toFixed(2);
+      }
+      for(var i = 0;i<=tmp.length-1;i++){
+      tmr[i] = ((tmr[i] - value1)/1000).toFixed(2);
+      tmp[i] = ((tmp[i] - value2)/1000).toFixed(2);
+      }
+
+      string = '[['+dwell+','+flight+']]';
+
+
+    
+
+
+
+      testbox2.value = string;
+      }
+
+      reset.onclick = function(){
+
+        tmp = [];
+        tmr = [];
+        dwell = [];
+        flight = [];
+
+        string = '';
+
+        testbox2.value = string;
+
+      }
+
+
+
+    });
+
+
+
+</script>
+
+
+
+{% endblock content %}
