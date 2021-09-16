@@ -8,13 +8,13 @@ This is a python project which use following libraries;
 -sklearn
 
 Make sure to download necessary libraries before starting 
-also you can check the website: <a href="https://userauthenticationproject.herokuapp.com">userauthenticationproject.herokuapp.com</a>
+
 
 The main goal of this project is increasing the password security of users.
 We are creating user models from key typings and we are using them onto machine learning algorithm.
 2 method is used.
-For password security i am using oneclass-svm to detect anomalies.
-For comparison with other users svm algorithm is used but their passwords must match.
+For password security i am using oneclass-svm and other clustering algorithms to detect anomalies.
+For comparison with other users, svm algorithm is used but their passwords must match.
 
 
 I created a account database in the account folder and it holds 3 example users.
@@ -32,7 +32,6 @@ The Third one is belong to my sisters' biometric data without rythim
                         !!!Warning!!!
 Before training your account press reset button a couple of times
 
-If you are willingly increase my data base i will appreciate it
 
 -First register
 -Then login
@@ -41,7 +40,7 @@ If you are willingly increase my data base i will appreciate it
 -Then enter your password and hit enter.("It is same as Train button and also you can use backspace for reset button too")
 -After 100-200 data you will be able to recognize by the system
 
-Thank you!!!
+
 
 
 
