@@ -7,6 +7,10 @@ This is a python project which use following libraries;
 -time
 -sklearn
 
+
+
+[![Watch the video]](https://youtu.be/KlrqhiuypZk)
+
 Make sure to download necessary libraries before starting 
 
 
