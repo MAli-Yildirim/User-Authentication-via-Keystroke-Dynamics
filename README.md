@@ -9,7 +9,8 @@ This is a python project which use following libraries;
 
 
 
-[![Watch the video]](https://youtu.be/KlrqhiuypZk)
+[![Watch the video](https://img.youtube.com/vi/KlrqhiuypZk/maxresdefault.jpg)](https://youtu.be/KlrqhiuypZk)
+
 
 Make sure to download necessary libraries before starting 
 
