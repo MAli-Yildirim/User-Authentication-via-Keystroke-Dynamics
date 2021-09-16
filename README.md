@@ -41,6 +41,10 @@ Before training your account press reset button a couple of times
 -Then enter your password and hit enter.("It is same as Train button and also you can use backspace for reset button too")
 -After 100-200 data you will be able to recognize by the system
 
+
+A Website is created to gather and store data around the world into a one common system. So
+the system would work more efficently with a lot of data.
+
 [![Watch the video](https://img.youtube.com/vi/KlrqhiuypZk/hqdefault.jpg)](https://youtu.be/KlrqhiuypZk)
 
 
