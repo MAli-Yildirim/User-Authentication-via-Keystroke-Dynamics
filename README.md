@@ -41,7 +41,7 @@ Before training your account press reset button a couple of times
 -Then enter your password and hit enter.("It is same as Train button and also you can use backspace for reset button too")
 -After 100-200 data you will be able to recognize by the system
 
-[![Watch the video](https://img.youtube.com/vi/KlrqhiuypZk/maxresdefault.jpg)](https://youtu.be/KlrqhiuypZk)
+[![Watch the video](https://img.youtube.com/vi/KlrqhiuypZk/hqdefault.jpg)](https://youtu.be/KlrqhiuypZk)
 
 
 
