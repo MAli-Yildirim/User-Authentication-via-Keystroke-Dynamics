@@ -8,10 +8,6 @@ This is a python project which use following libraries;
 -sklearn
 
 
-
-[![Watch the video](https://img.youtube.com/vi/KlrqhiuypZk/maxresdefault.jpg)](https://youtu.be/KlrqhiuypZk)
-
-
 Make sure to download necessary libraries before starting 
 
 
@@ -45,7 +41,7 @@ Before training your account press reset button a couple of times
 -Then enter your password and hit enter.("It is same as Train button and also you can use backspace for reset button too")
 -After 100-200 data you will be able to recognize by the system
 
-
+[![Watch the video](https://img.youtube.com/vi/KlrqhiuypZk/maxresdefault.jpg)](https://youtu.be/KlrqhiuypZk)
 
 
 
